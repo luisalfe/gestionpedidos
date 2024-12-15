@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Gestión de Pedidos</title>
+</head>
+<body>
+<h1>Formulario para realizar pedidos</h1>
+<form id="pedidoForm">
+    <label for="description">Producto:</label>
+    <input type="text" id="description" name="description" required>
+    <br>
+    <button type="submit">Enviar</button>
+</form>
+<div id="responseMessage"></div>
+</body>
+<script>
+    document.querySelector('#pedidoForm').addEventListener('submit', async function (e) {
+        e.preventDefault(); // Evita el envío estándar del formulario
+
+        const description = document.querySelector('#description').value; // Obtiene el valor del campo
+
+        if (!description) {
+            alert('El campo Producto no puede estar vacío');
+            return;
+        }
+
+        console.log('Enviando descripción:', description); // Log para verificar el valor
+
+        try {
+            const response = await fetch('http://localhost:8080/orders', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json', // Especifica que el contenido es JSON
+                },
+                body: JSON.stringify({ description }), // Envía el pedido en formato JSON
+            });
+
+            if (!response.ok) {
+                throw new Error('Error en la solicitud');
+            }
+
+            const data = await response.json();
+            document.getElementById('responseMessage').textContent = 'Pedido realizado con éxito';
+            console.log('Success:', data);
+        } catch (error) {
+            document.getElementById('responseMessage').textContent = 'Error al realizar el pedido';
+            console.error('Error:', error);
+        }
+    });
+</script>
+</html>
+
